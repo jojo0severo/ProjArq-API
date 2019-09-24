@@ -1,7 +1,6 @@
 import json
 import secrets
 from flask import Flask, request, jsonify
-from flask_socketio import SocketIO
 from server_helper.api_manager import Manager
 
 key = secrets.token_urlsafe(16)
@@ -9,7 +8,6 @@ key = secrets.token_urlsafe(16)
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
 app.config['SECRET_KEY'] = key
-socket = SocketIO(app)
 manager = Manager()
 
 
@@ -138,7 +136,6 @@ def create_team():
         if manager.add_team(team_name, admin_name):
             response['data'] = 'Team created'
             status_code = 200
-            socket.emit('teams_update', manager.get_teams(), broadcast=True)
 
         else:
             status_code = 401
@@ -167,7 +164,6 @@ def delete_team():
         if manager.delete_team(team_name, admin_name):
             response['data'] = 'Team deleted'
             status_code = 200
-            socket.emit('teams_update', manager.get_teams(), broadcast=True)
 
         else:
             status_code = 401
@@ -198,7 +194,6 @@ def edit_team_add_members():
         if manager.add_members(team_name, admin, members):
             response['data'] = 'Members added'
             status_code = 200
-            socket.emit('teams_update', manager.get_teams(), broadcast=True)
 
         else:
             status_code = 401
@@ -229,7 +224,6 @@ def edit_team_remove_members():
         if manager.delete_members(team_name, admin, members):
             response['data'] = 'Members removed'
             status_code = 200
-            socket.emit('teams_update', manager.get_teams(), broadcast=True)
 
         else:
             status_code = 401
@@ -259,7 +253,6 @@ def enter_team():
         if manager.add_member(team_name, username):
             response['data'] = 'User added'
             status_code = 200
-            socket.emit('teams_update', manager.get_teams(), broadcast=True)
 
         else:
             status_code = 401
@@ -289,7 +282,6 @@ def leave_team():
         if manager.delete_member(team_name, username):
             response['data'] = 'User removed'
             status_code = 200
-            socket.emit('teams_update', manager.get_teams(), broadcast=True)
 
         else:
             status_code = 401
@@ -414,4 +406,4 @@ def check_key(external_key):
 
 
 if __name__ == '__main__':
-    socket.run(app)
+    app.run()
