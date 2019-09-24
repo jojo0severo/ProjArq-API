@@ -414,4 +414,4 @@ def check_key(external_key):
 
 
 if __name__ == '__main__':
-    socket.run(app, host='127.0.0.1', port='8080')
+    socket.run(app)
