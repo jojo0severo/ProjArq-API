@@ -88,6 +88,7 @@ def rate_team():
         if manager.rate_team(valuer_name, team_name, software, pitch, innovation, team):
             response['data'] = 'Team rated'
             status_code = 200
+            socket.emit('team_rated', data={'team_name': team_name}, broadcast=True)
 
         else:
             status_code = 401
@@ -138,6 +139,7 @@ def create_team():
         if manager.add_team(team_name, admin_email):
             response['data'] = 'Team created'
             status_code = 200
+            socket.emit('team_created', data={'team': manager.get_team(team_name)}, broadcast=True)
 
         else:
             status_code = 401
@@ -166,6 +168,7 @@ def delete_team():
         if manager.delete_team(team_name, admin_email):
             response['data'] = 'Team deleted'
             status_code = 200
+            socket.emit('team_deleted', data={'team': team_name}, broadcast=True)
 
         else:
             status_code = 401
@@ -196,6 +199,7 @@ def edit_team_add_members():
         if manager.add_members(team_name, admin_email, members):
             response['data'] = 'Members added'
             status_code = 200
+            socket.emit('member_added', data={'team': manager.get_team(team_name)}, broadcast=True)
 
         else:
             status_code = 401
@@ -226,6 +230,7 @@ def edit_team_remove_members():
         if manager.delete_members(team_name, admin_email, members):
             response['data'] = 'Members removed'
             status_code = 200
+            socket.emit('member_removed', data={'team': manager.get_team(team_name)}, broadcast=True)
 
         else:
             status_code = 401
@@ -255,6 +260,7 @@ def enter_team():
         if manager.add_member(team_name, email):
             response['data'] = 'User added'
             status_code = 200
+            socket.emit('member_added', data={'team': manager.get_team(team_name)}, broadcast=True)
 
         else:
             status_code = 401
@@ -284,6 +290,7 @@ def leave_team():
         if manager.delete_member(team_name, email):
             response['data'] = 'User removed'
             status_code = 200
+            socket.emit('member_removed', data={'team': manager.get_team(team_name)}, broadcast=True)
 
         else:
             status_code = 401
