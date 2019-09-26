@@ -4,9 +4,9 @@ from model.team import Team
 
 class TeamsDB:
 
-    def add_team(self, team_name, admin_name):
-        first_query = f'INSERT INTO TEAM VALUES ("{team_name}", "{admin_name}", 0.0);'
-        second_query = f'INSERT INTO STUDENT_TEAM VALUES ("{team_name}", "{admin_name}");'
+    def add_team(self, team_name, admin_email):
+        first_query = f'INSERT INTO TEAM VALUES ("{team_name}", "{admin_email}", 0.0);'
+        second_query = f'INSERT INTO STUDENT_TEAM VALUES ("{team_name}", "{admin_email}");'
 
         with sqlite3.connect('database/local.db') as conn:
             try:
@@ -20,8 +20,8 @@ class TeamsDB:
             except sqlite3.OperationalError:
                 return False
 
-    def add_member(self, team_name, email):
-        query = f'INSERT INTO STUDENT_TEAM VALUES ("{team_name}", "{email}");'
+    def add_member(self, team_name, member):
+        query = f'INSERT INTO STUDENT_TEAM VALUES ("{team_name}", "{member}");'
 
         with sqlite3.connect('database/local.db') as conn:
             try:

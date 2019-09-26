@@ -1,9 +1,9 @@
 
 
 class Team:
-    def __init__(self, team_name, admin_name):
+    def __init__(self, team_name, admin_email):
         self.team_name = team_name
-        self.admin_name = admin_name
+        self.admin_email = admin_email
         self.members = []
 
     def add_member(self, member_name):

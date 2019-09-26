@@ -26,10 +26,10 @@ class Manager:
     def check_user(self, username, password, is_student):
         return self.users_manager.check_user(username, password, is_student)
 
-    def add_team(self, team_name, admin_name):
-        return self.teams_manager.add_team(team_name, admin_name)
+    def add_team(self, team_name, admin_email):
+        return self.teams_manager.add_team(team_name, admin_email)
 
-    def add_member(self, team_name, username):
+    def add_member(self, team_name, member):
         team = self.teams_manager.get_team(team_name)
 
         if team is None:
@@ -45,9 +45,9 @@ class Manager:
                 if es_counter == 4:
                     return False
 
-        return self.teams_manager.add_member(team_name, username)
+        return self.teams_manager.add_member(team_name, member)
 
-    def add_members(self, team_name, admin_name, members):
+    def add_members(self, team_name, admin_email, members):
         team = self.teams_manager.get_team(team_name)
 
         if team is None:
@@ -74,7 +74,7 @@ class Manager:
                 if es_counter > 4:
                     return False
 
-        return self.teams_manager.add_members(team_name, admin_name, members)
+        return self.teams_manager.add_members(team_name, admin_email, members)
 
     def get_team(self, team_name):
         return self.json_encoder.encode_team(self.teams_manager.get_team(team_name))
@@ -82,14 +82,14 @@ class Manager:
     def get_teams(self):
         return self.json_encoder.encode_teams(self.teams_manager.get_teams())
 
-    def delete_team(self, team_name, admin_name):
-        return self.teams_manager.delete_team(team_name, admin_name)
+    def delete_team(self, team_name, admin_email):
+        return self.teams_manager.delete_team(team_name, admin_email)
 
     def delete_member(self, team_name, member):
         return self.teams_manager.delete_member(team_name, member)
 
-    def delete_members(self, team_name, admin_name, members):
-        return self.teams_manager.delete_members(team_name, admin_name, members)
+    def delete_members(self, team_name, admin_email, members):
+        return self.teams_manager.delete_members(team_name, admin_email, members)
 
     def get_teams_rank(self):
         return self.json_encoder.encode_teams(self.teams_manager.get_rank())

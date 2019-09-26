@@ -18,7 +18,7 @@ def login():
     try:
         data = request.get_json()
 
-        username = data['user']
+        username = data['username']
         password = data['password']
         is_student = data['is_student']
 
@@ -48,7 +48,7 @@ def register_valuer():
     try:
         data = request.get_json()
 
-        username = data['user']
+        username = data['username']
         password = data['password']
 
         if manager.add_valuer(username, password):
@@ -131,9 +131,9 @@ def create_team():
     try:
         data = request.get_json()
         team_name = data['team_name']
-        admin_name = data['username']
+        admin_email = data['username']
 
-        if manager.add_team(team_name, admin_name):
+        if manager.add_team(team_name, admin_email):
             response['data'] = 'Team created'
             status_code = 200
 
@@ -159,9 +159,9 @@ def delete_team():
     try:
         data = request.get_json()
         team_name = data['team_name']
-        admin_name = data['username']
+        admin_email = data['username']
 
-        if manager.delete_team(team_name, admin_name):
+        if manager.delete_team(team_name, admin_email):
             response['data'] = 'Team deleted'
             status_code = 200
 
@@ -188,10 +188,10 @@ def edit_team_add_members():
         data = request.get_json()
 
         team_name = data['team_name']
-        admin = data['username']
+        admin_email = data['username']
         members = data['members']
 
-        if manager.add_members(team_name, admin, members):
+        if manager.add_members(team_name, admin_email, members):
             response['data'] = 'Members added'
             status_code = 200
 
@@ -218,10 +218,10 @@ def edit_team_remove_members():
         data = request.get_json()
 
         team_name = data['team_name']
-        admin = data['username']
+        admin_email = data['username']
         members = data['members']
 
-        if manager.delete_members(team_name, admin, members):
+        if manager.delete_members(team_name, admin_email, members):
             response['data'] = 'Members removed'
             status_code = 200
 
@@ -248,9 +248,9 @@ def enter_team():
         data = request.get_json()
 
         team_name = data['team_name']
-        username = data['username']
+        email = data['username']
 
-        if manager.add_member(team_name, username):
+        if manager.add_member(team_name, email):
             response['data'] = 'User added'
             status_code = 200
 
@@ -277,9 +277,9 @@ def leave_team():
         data = request.get_json()
 
         team_name = data['team_name']
-        username = data['username']
+        email = data['username']
 
-        if manager.delete_member(team_name, username):
+        if manager.delete_member(team_name, email):
             response['data'] = 'User removed'
             status_code = 200
 
