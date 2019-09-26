@@ -12,6 +12,11 @@ app.config['JSON_SORT_KEYS'] = False
 app.config['SECRET_KEY'] = key
 manager = Manager()
 
+@socket.on
+def batata(*args):
+    print('Batata')
+    return 'Batata'
+
 
 @app.route('/login', methods=['POST'])
 def login():
