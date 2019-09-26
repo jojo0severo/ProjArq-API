@@ -9,6 +9,7 @@ app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
 app.config['SECRET_KEY'] = key
 manager = Manager()
+# manager.add_valuer('jojo', 'jojo')
 
 
 @app.route('/login', methods=['POST'])
@@ -347,7 +348,7 @@ def get_certificate(student_name):
 
         certificate = manager.get_certificate(valuer_name, student_name)
 
-        if certificate is None:
+        if not certificate:
             status_code = 404
 
         else:
