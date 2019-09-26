@@ -2,10 +2,12 @@ import json
 import secrets
 from flask import Flask, request, jsonify
 from server_helper.api_manager import Manager
+from flask_socketio import SocketIO
 
 key = secrets.token_urlsafe(16)
 
 app = Flask(__name__)
+socket = SocketIO(app)
 app.config['JSON_SORT_KEYS'] = False
 app.config['SECRET_KEY'] = key
 manager = Manager()
@@ -406,4 +408,4 @@ def check_key(external_key):
 
 
 if __name__ == '__main__':
-    app.run()
+    socket.run(app)
