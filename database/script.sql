@@ -1,24 +1,25 @@
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE STUDENT (
-    username VARCHAR(50) PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
     password VARCHAR(20) NOT NULL,
-    course VARCHAR (2) NOT NULL
+    course VARCHAR(2) NOT NULL,
+    email VARCHAR(50) NOT NULL PRIMARY KEY
 );
 
 CREATE TABLE TEAM (
     team_name VARCHAR(50) PRIMARY KEY,
     admin VARCHAR(50) NOT NULL,
     rate REAL NOT NULL,
-    FOREIGN KEY (admin) REFERENCES STUDENT(username)
+    FOREIGN KEY (admin) REFERENCES STUDENT(email)
 );
 
 CREATE TABLE STUDENT_TEAM (
     team_name VARCHAR (50) NOT NULL,
-    username VARCHAR (50) NOT NULL UNIQUE,
+    email VARCHAR (50) NOT NULL UNIQUE,
     FOREIGN KEY (team_name) REFERENCES TEAM(team_name),
-    FOREIGN KEY (username) REFERENCES STUDENT(username),
-    PRIMARY KEY (team_name, username)
+    FOREIGN KEY (email) REFERENCES STUDENT(email),
+    PRIMARY KEY (team_name, email)
 );
 
 CREATE TABLE CERTIFICATE (
