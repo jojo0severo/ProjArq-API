@@ -17,11 +17,11 @@ class Manager:
             if str(e) != 'table STUDENT already exists':
                 raise e
 
-    def add_student(self, username, password, course):
-        return self.users_manager.add_user(username, password, True, course)
+    def add_student(self, username, password, course, email):
+        return self.users_manager.add_user(username, password, True, course, email)
 
     def add_valuer(self, username, password):
-        return self.users_manager.add_user(username, password, False, '')
+        return self.users_manager.add_user(username, password, False, '', '')
 
     def check_user(self, username, password, is_student):
         return self.users_manager.check_user(username, password, is_student)
@@ -101,12 +101,12 @@ class Manager:
 
         return self.teams_manager.update_rank(team_name, software, pitch, innovation, team)
 
-    def get_certificate(self, valuer_name, student_name):
+    def get_certificate(self, valuer_name, student_email):
         valuer = self.users_manager.get_user(valuer_name, False)
         if valuer is None:
             return None
 
-        return self.json_encoder.encode_certificate(self.certificates_manager.get_certificate(student_name))
+        return self.json_encoder.encode_certificate(self.certificates_manager.get_certificate(student_email))
 
     def get_certificates(self, valuer_name):
         valuer = self.users_manager.get_user(valuer_name, False)

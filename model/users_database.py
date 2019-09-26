@@ -5,8 +5,8 @@ from model.valuer import Valuer
 
 class UsersDB:
 
-    def add_student(self, username, password, course):
-        query = f'INSERT INTO STUDENT VALUES ("{username}", "{password}", "{course}");'
+    def add_student(self, username, password, course, email):
+        query = f'INSERT INTO STUDENT VALUES ("{username}", "{password}", "{course}", "{email}");'
 
         with sqlite3.connect('database/local.db') as conn:
             try:
@@ -33,20 +33,28 @@ class UsersDB:
             except sqlite3.OperationalError:
                 return False
 
-    def get_student(self, username):
-        query = f'SELECT * FROM STUDENT WHERE username = "{username}";'
+    def get_student(self, email):
+        query = f'SELECT * FROM STUDENT WHERE email = "{email}";'
 
         with sqlite3.connect('database/local.db') as conn:
-            return self.create_student(conn.cursor().execute(query).fetchall()[0])
+            resp = conn.cursor().execute(query).fetchall()
+            if not resp:
+                return None
+
+            return self.create_student(resp[0])
 
     def get_valuer(self, username):
         query = f'SELECT * FROM VALUER WHERE username = "{username}";'
 
         with sqlite3.connect('database/local.db') as conn:
-            return self.create_valuer(conn.cursor().execute(query).fetchall()[0])
+            resp = conn.cursor().execute(query).fetchall()
+            if not resp:
+                return None
 
-    def delete_student(self, username):
-        query = f'DELETE FROM STUDENT WHERE username = "{username}";'
+            return self.create_valuer(resp[0])
+
+    def delete_student(self, email):
+        query = f'DELETE FROM STUDENT WHERE email = "{email}";'
 
         with sqlite3.connect('database/local.db') as conn:
             try:

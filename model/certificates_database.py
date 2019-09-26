@@ -3,8 +3,8 @@ from model.certificate import Certificate
 
 
 class CertificatesDB:
-    def get_certificate(self, username):
-        query = f'SELECT * FROM CERTIFICATE WHERE username = "{username}";'
+    def get_certificate(self, email):
+        query = f'SELECT * FROM CERTIFICATE WHERE username = "{email}";'
 
         with sqlite3.connect('database/local.db') as conn:
             resp = conn.cursor().execute(query).fetchall()
@@ -31,7 +31,6 @@ class CertificatesDB:
             try:
                 conn.cursor().execute(query)
                 return True
-
 
             except sqlite3.IntegrityError:
                 return False

@@ -9,11 +9,11 @@ class UsersManager:
         self.valuers = {}
         self.users_database = UsersDB()
 
-    def add_user(self, username, password, is_student, course):
+    def add_user(self, username, password, is_student, course, email):
         if is_student:
             if username not in self.students.keys():
-                if self.users_database.add_student(username, password, course):
-                    self.students[username] = Student(username, password, course)
+                if self.users_database.add_student(username, password, course, email):
+                    self.students[email] = Student(username, password, course, email)
                     return True
 
             return False
@@ -26,51 +26,51 @@ class UsersManager:
 
             return False
 
-    def get_user(self, username, is_student):
+    def get_user(self, key, is_student):
         if is_student:
-            if username not in self.students.keys():
-                return self.users_database.get_student(username)
+            if key not in self.students.keys():
+                return self.users_database.get_student(key)
 
-            return self.students[username]
+            return self.students[key]
 
         else:
-            if username not in self.valuers.keys():
-                return self.users_database.get_valuer(username)
+            if key not in self.valuers.keys():
+                return self.users_database.get_valuer(key)
 
-            return self.valuers[username]
+            return self.valuers[key]
 
-    def remove_user(self, username, is_student):
+    def remove_user(self, key, is_student):
         if is_student:
-            if username in self.students.keys():
-                del self.students[username]
+            if key in self.students.keys():
+                del self.students[key]
 
-            return self.users_database.delete_student(username)
+            return self.users_database.delete_student(key)
 
         else:
-            if username in self.valuers.keys():
-                del self.valuers[username]
+            if key in self.valuers.keys():
+                del self.valuers[key]
 
-            return self.users_database.delete_valuer(username)
+            return self.users_database.delete_valuer(key)
 
-    def check_user(self, username, password, is_student):
+    def check_user(self, key, password, is_student):
         if is_student:
-            if username not in self.students.keys():
-                student = self.users_database.get_student(username)
+            if key not in self.students.keys():
+                student = self.users_database.get_student(key)
                 if student is not None:
-                    self.students[username] = student
+                    self.students[key] = student
                     return student.password == password
 
                 return False
 
-            return self.students[username].password == password
+            return self.students[key].password == password
 
         else:
-            if username not in self.valuers.keys():
-                valuer = self.users_database.get_valuer(username)
+            if key not in self.valuers.keys():
+                valuer = self.users_database.get_valuer(key)
                 if valuer is not None:
-                    self.valuers[username] = valuer
+                    self.valuers[key] = valuer
                     return valuer.password == password
 
                 return False
 
-            return self.valuers[username].password == password
+            return self.valuers[key].password == password
