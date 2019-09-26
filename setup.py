@@ -9,7 +9,6 @@ app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
 app.config['SECRET_KEY'] = key
 manager = Manager()
-# manager.add_valuer('jojo', 'jojo')
 
 
 @app.route('/login', methods=['POST'])
