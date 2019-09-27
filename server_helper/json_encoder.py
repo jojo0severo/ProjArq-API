@@ -9,7 +9,7 @@ class Encoder:
 
         return {
             'name': team.team_name,
-            'admin_name': team.admin_name,
+            'admin_name': team.admin_email,
             'members': team.members
         }
 

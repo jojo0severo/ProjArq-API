@@ -9,6 +9,8 @@ i = '[íìî]'
 o = '[õóòô]'
 u = '[úùû]'
 
+manager = Manager()
+
 
 def generate_students():
     courses = ['ES', 'SI', 'CC', 'EC']
@@ -28,7 +30,6 @@ def generate_students():
 
 
 def load_students():
-    manager = Manager()
     with open('resources/students.csv', 'r', encoding='utf-8') as stud:
         lines = stud.read().split('\n')[:-1]
         for line in lines:
@@ -36,6 +37,17 @@ def load_students():
             manager.add_student(name, registration, course, email)
 
 
+def load_valuers():
+    valuers = [
+        ('joao', 'joao'),
+        ('pedro', 'pedro'),
+        ('maria', 'maria')]
+
+    for name, password in valuers:
+        manager.add_valuer(name, password)
+
+
 if __name__ == '__main__':
     # generate_students()
     load_students()
+    load_valuers()
