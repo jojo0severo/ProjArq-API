@@ -47,7 +47,46 @@ def load_valuers():
         manager.add_valuer(name, password)
 
 
+def load_teams():
+    teams_names = ['team_' + str(j + 1) for j in range(5)]
+    teams = []
+
+    with open('resources/students.csv', 'r', encoding='utf-8') as stud:
+        lines = stud.read().split('\n')[:-1]
+
+        admins = random.choices(lines, k=5)
+        [lines.remove(admin) for admin in admins]
+
+        first_members = random.choices(lines, k=5)
+        [lines.remove(member) for member in first_members]
+
+        second_members = random.choices(lines, k=5)
+        [lines.remove(member) for member in second_members]
+
+        third_members = random.choices(lines, k=5)
+        [lines.remove(member) for member in third_members]
+
+        fourth_members = random.choices(lines, k=5)
+        [lines.remove(member) for member in fourth_members]
+
+        fifth_members = random.choices(lines, k=5)
+
+        for j in range(5):
+            team_name = teams_names[j]
+            _, _, _, admin = admins[j].split(',')
+            members = [first_members[j].split(','), second_members[j].split(','), third_members[j].split(','),
+                       fourth_members[j].split(','), fifth_members[j].split(',')]
+
+            teams.append({'admin_email': admin, 'team_name': team_name, 'members': members})
+
+    for team in teams:
+        manager.add_team(team['team_name'], team['admin_email'])
+        members = [email for _, _, _, email in team['members']]
+        print(manager.add_members(team['team_name'], team['admin_email'], members))
+
+
 if __name__ == '__main__':
     # generate_students()
     load_students()
     load_valuers()
+    load_teams()
