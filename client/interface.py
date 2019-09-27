@@ -25,6 +25,7 @@ class InterfaceTerminal:
             print('\n')
 
             if choice == 0:
+                self.c.disconnect()
                 break
 
             elif choice == 1:

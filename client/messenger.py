@@ -12,7 +12,7 @@ class Client:
         self.define_callbacks()
         self.wait_timeout = True
 
-        print('Batata - Jequiti\n\n\n\n\n\n')
+        print('Batata - Jequiti\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
         time.sleep(0.3)
 
         with open('ascii1.txt', 'r') as file1:
@@ -24,6 +24,9 @@ class Client:
             print(file2.read())
 
         time.sleep(3)
+
+    def disconnect(self):
+        self.socket.disconnect()
 
     def define_callbacks(self):
         self.socket.on('team_rated', self.get_response)
