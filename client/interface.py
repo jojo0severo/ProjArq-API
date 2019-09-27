@@ -1,3 +1,4 @@
+import sys
 import getpass
 from messenger import Client
 
@@ -164,5 +165,6 @@ class InterfaceTerminal:
 
 
 if __name__ == '__main__':
-    i = InterfaceTerminal('http://127.0.0.1:5000/')
+    url = sys.argv[1]
+    i = InterfaceTerminal(url)
     i.loop()
