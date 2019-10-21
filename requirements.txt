@@ -3,7 +3,7 @@ chardet==3.0.4
 Click==7.0
 Flask==1.1.1
 Flask-SocketIO==4.2.1
-gunicorn==19.0.0
+gunicorn==19.5.0
 idna==2.8
 itsdangerous==1.1.0
 Jinja2==2.10.1
