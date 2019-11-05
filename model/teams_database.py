@@ -7,215 +7,234 @@ from model.team import Team
 class TeamsDB:
     def __init__(self):
         url = urlparse(os.environ.get('DATABASE_URL'))
-        url = urlparse(
-            'postgres://jiyhwfshwvzgom:10aa9f8bce9d36f1271749b82fce10459907a52c80f33f388f995ec36e2bfb4a@ec2-174-129-253-104.compute-1.amazonaws.com:5432/db3r8ta6ni6o1n')
         self.db = "dbname={} user={} password={} host={} ".format(url.path[1:], url.username, url.password, url.hostname)
 
     def add_team(self, team_name, admin_email):
-        first_query = f'INSERT INTO TEAM VALUES ("{team_name}", "{admin_email}", 0.0);'
-        second_query = f'INSERT INTO STUDENT_TEAM VALUES ("{team_name}", "{admin_email}");'
+        first_query = f'INSERT INTO TEAM (team_name, admin, rate) VALUES (%s, %s, 0.0);'
+        second_query = f'INSERT INTO STUDENT_TEAM (team_name, email) VALUES (%s, %s);'
 
         with psycopg2.connect(self.db) as conn:
-            try:
-                conn.cursor().execute(first_query)
-                conn.cursor().execute(second_query)
-                return True
+            with conn.cursor() as cursor:
+                try:
+                    cursor.execute(first_query, (team_name, admin_email))
+                    cursor.execute(second_query, (team_name, admin_email))
+                    conn.commit()
+                    return True
 
-            except psycopg2.IntegrityError:
-                return False
+                except psycopg2.IntegrityError:
+                    return False
 
-            except psycopg2.OperationalError:
-                return False
+                except psycopg2.OperationalError:
+                    return False
 
-    def add_member(self, team_name, member):
-        query = f'INSERT INTO STUDENT_TEAM VALUES ("{team_name}", "{member}");'
+    def add_member(self, team_name, member_email):
+        query = f'INSERT INTO STUDENT_TEAM (team_name, email) VALUES (%s, %s);'
 
         with psycopg2.connect(self.db) as conn:
-            try:
-                conn.cursor().execute(query)
-                return True
+            with conn.cursor() as cursor:
+                try:
+                    cursor.execute(query, (team_name, member_email))
+                    conn.commit()
+                    return True
 
-            except psycopg2.IntegrityError:
-                return False
+                except psycopg2.IntegrityError:
+                    return False
 
-            except psycopg2.OperationalError:
-                return False
+                except psycopg2.OperationalError:
+                    return False
 
     def add_members(self, team_name, members):
-        query = f'INSERT INTO STUDENT_TEAM VALUES ("{team_name}", '
+        query = f'INSERT INTO STUDENT_TEAM (team_name, email) VALUES (%s, %s);'
 
         with psycopg2.connect(self.db) as conn:
-            error_index = 0
-            try:
-                for member in members:
-                    conn.cursor().execute(query + f'"{member}");')
-                    error_index += 1
+            with conn.cursor() as cursor:
+                error_index = 0
+                try:
+                    for member in members:
+                        cursor.execute(query, (team_name, member))
+                        error_index += 1
 
-                return True
+                    conn.commit()
+                    return True
 
-            except psycopg2.IntegrityError:
-                query = f'DELETE FROM STUDENT_TEAM WHERE team_name = "{team_name}" AND email = '
+                except psycopg2.IntegrityError:
+                    query = f'DELETE FROM STUDENT_TEAM WHERE team_name = %s AND email = %s;'
 
-                for member in members[:error_index]:
-                    conn.cursor().execute(query + f'"{member}";')
+                    for member in members[:error_index]:
+                        cursor.execute(query, (team_name, member))
 
-                return False
+                    conn.commit()
+                    return False
 
-            except psycopg2.OperationalError:
-                query = f'DELETE FROM STUDENT_TEAM WHERE team_name = "{team_name}" AND email = '
+                except psycopg2.OperationalError:
+                    query = f'DELETE FROM STUDENT_TEAM WHERE team_name = %s AND email = %s;'
 
-                for member in members[:error_index]:
-                    conn.cursor().execute(query + f'"{member}";')
+                    for member in members[:error_index]:
+                        cursor.execute(query, (team_name, member))
 
-                return False
+                    conn.commit()
+                    return False
 
     def get_user_team(self, email):
-        query = f'SELECT * FROM STUDENT_TEAM WHERE email = "{email}";'
+        query = f'SELECT * FROM STUDENT_TEAM WHERE email = %s;'
 
         with psycopg2.connect(self.db) as conn:
-            return self.create_team(conn.cursor().execute(query).fetchall()[0], [])
-
-    def get_team(self, team_name):
-        first_query = f'SELECT * FROM TEAM WHERE team_name = "{team_name}";'
-        second_query = f'SELECT * FROM STUDENT_TEAM WHERE team_name = "{team_name}";'
-        third_query = 'SELECT * FROM STUDENT WHERE email = "'
-
-        with psycopg2.connect(self.db) as conn:
-            try:
-                conn.cursor().execute(first_query)
-
-                team = conn.cursor().fetchone()
-                if not team:
+            with conn.cursor() as cursor:
+                try:
+                    return self.create_team(cursor.execute(query, (email,)).fetchone(), [])
+                except psycopg2.ProgrammingError:
                     return None
 
-                conn.cursor().execute(second_query)
+    def get_team(self, team_name):
+        first_query = f'SELECT * FROM TEAM WHERE team_name = %s;'
+        second_query = f'SELECT * FROM STUDENT_TEAM WHERE team_name = %s;'
+        third_query = 'SELECT * FROM STUDENT WHERE email = %s;'
 
-                members = conn.cursor().fetchall()
-                full_members = []
-                for _, member in members:
-                    conn.cursor().execute(third_query + str(member) + '";')
-                    full_members.append(conn.cursor().fetchone())
+        with psycopg2.connect(self.db) as conn:
+            with conn.cursor() as cursor:
+                try:
+                    cursor.execute(first_query, (team_name,))
+                    team = cursor.fetchone()
+                    if not team:
+                        return None
 
-                return self.create_team(team, full_members)
+                    cursor.execute(second_query, (team_name,))
+                    members = cursor.fetchall()
+                    full_members = []
+                    for _, member in members:
+                        cursor.execute(third_query, (member,))
+                        full_members.append(cursor.fetchone())
 
-            except psycopg2.ProgrammingError:
-                return None
+                    return self.create_team(team, full_members)
+
+                except psycopg2.ProgrammingError:
+                    return None
 
     def get_teams(self):
         query = f'SELECT * FROM TEAM;'
-        second_query = 'SELECT * FROM STUDENT WHERE email = "'
+        second_query = 'SELECT * FROM STUDENT WHERE email = %s;'
 
         with psycopg2.connect(self.db) as conn:
-            try:
-                conn.cursor().execute(query)
+            with conn.cursor() as cursor:
+                try:
+                    conn.cursor().execute(query)
 
-                teams = conn.cursor().fetchall()
-                teams_objects = []
-                for team_name, admin_name, rank in teams:
-                    conn.cursor().execute(f'SELECT * FROM STUDENT_TEAM WHERE team_name = "{team_name}";')
+                    teams = cursor.fetchall()
+                    teams_objects = []
+                    for team_name, admin_name, rank in teams:
+                        cursor.execute(f'SELECT * FROM STUDENT_TEAM WHERE team_name = %s;', (team_name,))
 
-                    members = conn.cursor().fetchall()
-                    full_members = []
-                    for _, member in members:
-                        conn.cursor().execute(second_query + str(member) + '";')
+                        members = cursor.fetchall()
+                        full_members = []
+                        for _, member in members:
+                            cursor.execute(second_query, (member,))
+                            full_members.append(cursor.fetchone())
 
-                        full_members.append(conn.curosr().fetchone())
+                        teams_objects.append(self.create_team((team_name, admin_name, rank), full_members))
 
-                    teams_objects.append(self.create_team((team_name, admin_name, rank), full_members))
+                    return teams_objects
 
-                return teams_objects
-
-            except psycopg2.ProgrammingError:
-                return []
+                except psycopg2.ProgrammingError:
+                    return []
 
     def get_rank(self):
         query = f'SELECT * FROM TEAM ORDER BY rate DESC;'
 
         with psycopg2.connect(self.db) as conn:
-            try:
-                conn.cursor().execute(query)
+            with conn.cursor() as cursor:
+                try:
+                    cursor.execute(query)
+                    teams = cursor.fetchall()
+                    teams_objects = []
+                    for team in teams:
+                        teams_objects.append(self.create_team(team, []))
 
-                teams = conn.cursor().fetchall()
-                teams_objects = []
-                for team in teams:
-                    teams_objects.append(self.create_team(team, []))
+                    return teams_objects
 
-                return teams_objects
-
-            except psycopg2.ProgrammingError:
-                return []
+                except psycopg2.ProgrammingError:
+                    return []
 
     def update_rank(self, team_name, rank):
-        query = f'UPDATE TEAM SET rate = {float(rank)} WHERE team_name = "{team_name}";'
+        query = f'UPDATE TEAM SET rate = %f WHERE team_name = %s;'
 
         with psycopg2.connect(self.db) as conn:
-            try:
-                conn.cursor().execute(query)
-                return True
+            with conn.cursor() as cursor:
+                try:
+                    cursor.execute(query, (float(rank), team_name))
+                    conn.commit()
+                    return True
 
-            except psycopg2.IntegrityError:
-                return False
+                except psycopg2.IntegrityError:
+                    return False
 
-            except psycopg2.OperationalError:
-                return False
+                except psycopg2.OperationalError:
+                    return False
 
     def remove_team(self, team_name):
-        first_query = f'DELETE FROM STUDENT_TEAM WHERE team_name = "{team_name}";'
-        second_query = f'DELETE FROM TEAM WHERE team_name = "{team_name}";'
+        first_query = f'DELETE FROM STUDENT_TEAM WHERE team_name = %s;'
+        second_query = f'DELETE FROM TEAM WHERE team_name = %s;'
 
         with psycopg2.connect(self.db) as conn:
-            try:
-                conn.cursor().execute(first_query)
-                conn.cursor().execute(second_query)
-                return True
+            with conn.cursor() as cursor:
+                try:
+                    cursor.execute(first_query, (team_name,))
+                    cursor.execute(second_query, (team_name,))
+                    conn.commit()
+                    return True
 
-            except psycopg2.IntegrityError:
-                return False
+                except psycopg2.IntegrityError:
+                    return False
 
-            except psycopg2.OperationalError:
-                return False
+                except psycopg2.OperationalError:
+                    return False
 
-    def remove_member(self, team_name, member):
-        query = f'DELETE FROM STUDENT_TEAM WHERE team_name = "{team_name}" AND email = "{member}";'
+    def remove_member(self, team_name, member_email):
+        query = f'DELETE FROM STUDENT_TEAM WHERE team_name = %s AND email = %s;'
 
         with psycopg2.connect(self.db) as conn:
-            try:
-                conn.cursor().execute(query)
-                return True
+            with conn.cursor() as cursor:
+                try:
+                    cursor.execute(query, (team_name, member_email))
+                    conn.commit()
+                    return True
 
-            except psycopg2.IntegrityError:
-                return False
+                except psycopg2.IntegrityError:
+                    return False
 
-            except psycopg2.OperationalError:
-                return False
+                except psycopg2.OperationalError:
+                    return False
 
     def remove_members(self, team_name, members):
-        query = f'DELETE FROM STUDENT_TEAM WHERE team_name = "{team_name}" AND email = '
+        query = f'DELETE FROM STUDENT_TEAM WHERE team_name = %s AND email = %s;'
 
         with psycopg2.connect(self.db) as conn:
-            error_index = 0
-            try:
-                for member in members:
-                    conn.cursor().execute(query + f'"{member}";')
-                    error_index += 1
+            with conn.cursor() as cursor:
+                try:
+                    error_index = 0
+                    for member in members:
+                        cursor.execute(query, (team_name, member))
+                        error_index += 1
 
-                return True
+                    conn.commit()
+                    return True
 
-            except psycopg2.IntegrityError:
-                query = f'INSERT INTO STUDENT_TEAM VALUES("{team_name}", '
+                except psycopg2.IntegrityError:
+                    query = f'INSERT INTO STUDENT_TEAM VALUES(%s, %s);'
 
-                for member in members[:error_index]:
-                    conn.cursor().execute(query + f'"{member}");')
+                    for member in members[:error_index]:
+                        cursor.execute(query, (team_name, member))
 
-                return False
+                    conn.commit()
+                    return False
 
-            except psycopg2.OperationalError:
-                query = f'INSERT INTO STUDENT_TEAM VALUES("{team_name}", '
+                except psycopg2.OperationalError:
+                    query = f'INSERT INTO STUDENT_TEAM VALUES(%s, %s);'
 
-                for member in members[:error_index]:
-                    conn.cursor().execute(query + f'"{member}");')
+                    for member in members[:error_index]:
+                        cursor.execute(query, (team_name, member))
 
-                return False
+                    conn.commit()
+                    return False
 
     def create_team(self, team, members):
         if not team:
