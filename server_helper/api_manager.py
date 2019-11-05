@@ -1,4 +1,3 @@
-import sqlite3
 from controller.users_manager import UsersManager
 from controller.teams_manager import TeamsManager
 from controller.certificates_manager import CertificatesManager
@@ -11,11 +10,6 @@ class Manager:
         self.teams_manager = TeamsManager()
         self.certificates_manager = CertificatesManager()
         self.json_encoder = Encoder()
-        try:
-            sqlite3.connect('database/local.db').executescript(open('database/script.sql', 'r').read())
-        except sqlite3.OperationalError as e:
-            if str(e) != 'table STUDENT already exists':
-                raise e
 
     def add_student(self, username, password, course, email):
         return self.users_manager.add_user(username, password, True, course, email)
