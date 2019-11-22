@@ -11,6 +11,9 @@ class Manager:
         self.certificates_manager = CertificatesManager()
         self.json_encoder = Encoder()
 
+    def get_user(self, username, is_student):
+        return self.users_manager.get_user(username, is_student)
+
     def add_student(self, username, password, course, email):
         return self.users_manager.add_user(username, password, True, course, email)
 

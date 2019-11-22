@@ -15,7 +15,7 @@ manager = Manager()
 
 @app.route('/login', methods=['POST'])
 def login():
-    response = {'data': 'Error'}
+    response = {'data': {}, 'message': 'Error'}
 
     try:
         data = request.get_json()
@@ -25,7 +25,8 @@ def login():
         is_student = data['is_student']
 
         if manager.check_user(username, password, is_student):
-            response['data'] = 'Logged'
+            response['data'] = manager.get_user(username, username.endswith('@acad.pucrs.br')).json()
+            response['message'] = 'Logged'
             status_code = 200
 
         else:
@@ -45,7 +46,7 @@ def login():
 
 @app.route('/avaliadores', methods=['POST'])
 def register_valuer():
-    response = {'data': 'Error'}
+    response = {'data': {}, 'message': 'Error'}
 
     try:
         data = request.get_json()
@@ -54,8 +55,9 @@ def register_valuer():
         password = data['password']
 
         if manager.add_valuer(username, password):
-            response['data'] = 'Registered'
-            status_code = 200
+            response['data'] = manager.get_user(username, False).json()
+            response['message'] = 'Registered'
+            status_code = 201
 
         else:
             status_code = 401
@@ -74,7 +76,7 @@ def register_valuer():
 
 @app.route('/avaliadores/avaliar', methods=['POST'])
 def rate_team():
-    response = {'data': 'Error'}
+    response = {'data': {}, 'message': 'Error'}
 
     try:
         data = request.get_json()
@@ -86,8 +88,8 @@ def rate_team():
         team = data['team']
 
         if manager.rate_team(valuer_name, team_name, software, pitch, innovation, team):
-            response['data'] = 'Team rated'
-            status_code = 200
+            response['message'] = 'Team rated'
+            status_code = 204
             socket.emit('team_rated', data={'team_name': team_name}, broadcast=True)
 
         else:
@@ -107,7 +109,7 @@ def rate_team():
 
 @app.route('/equipes', methods=['GET'])
 def get_teams():
-    response = {'data': manager.get_teams()}
+    response = {'data': manager.get_teams(), 'message': 'Ok'}
     status_code = 200
 
     return jsonify(response), status_code
@@ -115,13 +117,14 @@ def get_teams():
 
 @app.route('/equipes/<team_name>', methods=['GET'])
 def get_team(team_name):
-    response = {'data': 'Error'}
+    response = {'data': {}, 'message': 'Error'}
 
     team = manager.get_team(team_name)
     if team is None:
         status_code = 404
     else:
         response['data'] = team
+        response['message'] = 'Ok'
         status_code = 200
 
     return jsonify(response), status_code
@@ -129,7 +132,7 @@ def get_team(team_name):
 
 @app.route('/equipes/equipe', methods=['POST'])
 def create_team():
-    response = {'data': 'Error'}
+    response = {'data': {}, 'message': 'Error'}
 
     try:
         data = request.get_json()
@@ -137,8 +140,8 @@ def create_team():
         admin_email = data['username']
 
         if manager.add_team(team_name, admin_email):
-            response['data'] = 'Team created'
-            status_code = 200
+            response['message'] = 'Team created'
+            status_code = 201
             socket.emit('team_created', data={'team': manager.get_team(team_name)}, broadcast=True)
 
         else:
@@ -158,7 +161,7 @@ def create_team():
 
 @app.route('/equipes/equipe', methods=['DELETE'])
 def delete_team():
-    response = {'data': 'Error'}
+    response = {'data': {}, 'message': 'Error'}
 
     try:
         data = request.get_json()
@@ -166,8 +169,8 @@ def delete_team():
         admin_email = data['username']
 
         if manager.delete_team(team_name, admin_email):
-            response['data'] = 'Team deleted'
-            status_code = 200
+            response['message'] = 'Team deleted'
+            status_code = 204
             socket.emit('team_deleted', data={'team': team_name}, broadcast=True)
 
         else:
@@ -187,7 +190,7 @@ def delete_team():
 
 @app.route('/equipes/equipe/team', methods=['PUT'])
 def edit_team_add_members():
-    response = {'data': 'Error'}
+    response = {'data': {}, 'message': 'Error'}
 
     try:
         data = request.get_json()
@@ -197,8 +200,8 @@ def edit_team_add_members():
         members = data['members']
 
         if manager.add_members(team_name, admin_email, members):
-            response['data'] = 'Members added'
-            status_code = 200
+            response['message'] = 'Members added'
+            status_code = 204
             socket.emit('member_added', data={'team': manager.get_team(team_name)}, broadcast=True)
 
         else:
@@ -218,7 +221,7 @@ def edit_team_add_members():
 
 @app.route('/equipes/equipe/team', methods=['DELETE'])
 def edit_team_remove_members():
-    response = {'data': 'Error'}
+    response = {'data': {}, 'message': 'Error'}
 
     try:
         data = request.get_json()
@@ -228,8 +231,8 @@ def edit_team_remove_members():
         members = data['members']
 
         if manager.delete_members(team_name, admin_email, members):
-            response['data'] = 'Members removed'
-            status_code = 200
+            response['message'] = 'Members removed'
+            status_code = 204
             socket.emit('member_removed', data={'team': manager.get_team(team_name)}, broadcast=True)
 
         else:
@@ -249,7 +252,7 @@ def edit_team_remove_members():
 
 @app.route('/equipes/equipe/me', methods=['PUT'])
 def enter_team():
-    response = {'data': 'Error'}
+    response = {'data': {}, 'message': 'Error'}
 
     try:
         data = request.get_json()
@@ -258,7 +261,8 @@ def enter_team():
         email = data['username']
 
         if manager.add_member(team_name, email):
-            response['data'] = 'User added'
+            response['data'] = manager.get_user(email, True).json()
+            response['message'] = 'User added'
             status_code = 200
             socket.emit('member_added', data={'team': manager.get_team(team_name)}, broadcast=True)
 
@@ -279,7 +283,7 @@ def enter_team():
 
 @app.route('/equipes/equipe/me', methods=['DELETE'])
 def leave_team():
-    response = {'data': 'Error'}
+    response = {'data': {}, 'message': 'Error'}
 
     try:
         data = request.get_json()
@@ -288,7 +292,8 @@ def leave_team():
         email = data['username']
 
         if manager.delete_member(team_name, email):
-            response['data'] = 'User removed'
+            response['data'] = manager.get_user(email, True).json()
+            response['message'] = 'User removed'
             status_code = 200
             socket.emit('member_removed', data={'team': manager.get_team(team_name)}, broadcast=True)
 
@@ -309,7 +314,7 @@ def leave_team():
 
 @app.route('/equipes/rank', methods=['GET'])
 def teams_rank():
-    response = {'data': manager.get_teams_rank()}
+    response = {'data': manager.get_teams_rank(), 'message': 'Ok'}
     status_code = 200
 
     return jsonify(response), status_code
@@ -317,7 +322,7 @@ def teams_rank():
 
 @app.route('/certificates', methods=['GET'])
 def get_certificates():
-    response = {'data': 'Error'}
+    response = {'data': {}, 'message': 'Error'}
 
     try:
         data = request.get_json()
@@ -331,6 +336,7 @@ def get_certificates():
 
         else:
             response['data'] = certificates
+            response['message'] = 'Ok'
             status_code = 200
 
     except json.JSONDecodeError:
@@ -347,7 +353,7 @@ def get_certificates():
 
 @app.route('/certificates/<student_name>', methods=['GET'])
 def get_certificate(student_name):
-    response = {'data': 'Error'}
+    response = {'data': {}, 'message': 'Error'}
 
     try:
         data = request.get_json()
@@ -361,6 +367,7 @@ def get_certificate(student_name):
 
         else:
             response['data'] = certificate
+            response['message'] = 'Ok'
             status_code = 200
 
     except json.JSONDecodeError:
@@ -377,7 +384,7 @@ def get_certificate(student_name):
 
 @app.route('/certificates/<student_name>', methods=['POST'])
 def generate_certificate(student_name):
-    response = {'data': 'Error'}
+    response = {'data': {}, 'message': 'Error'}
 
     try:
         data = request.get_json()
@@ -388,7 +395,7 @@ def generate_certificate(student_name):
             status_code = 401
 
         else:
-            response['data'] = 'Certificate created'
+            response['message'] = 'Certificate created'
             status_code = 200
 
     except json.JSONDecodeError:
