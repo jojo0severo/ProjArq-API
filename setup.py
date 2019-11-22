@@ -31,15 +31,19 @@ def login():
 
         else:
             status_code = 401
+            response['message'] = 'User not registered'
 
     except json.JSONDecodeError:
         status_code = 415
+        response['message'] = 'Wrong message format'
 
     except KeyError:
         status_code = 400
+        response['message'] = 'Wrong keys sent'
 
     except TypeError:
         status_code = 400
+        response['message'] = 'Wrong values type sent'
 
     return jsonify(response), status_code
 
@@ -61,15 +65,19 @@ def register_valuer():
 
         else:
             status_code = 401
+            response['message'] = 'Valuer could not be registered'
 
     except json.JSONDecodeError:
         status_code = 415
+        response['message'] = 'Wrong message format'
 
     except KeyError:
         status_code = 400
+        response['message'] = 'Wrong keys sent'
 
     except TypeError:
         status_code = 400
+        response['message'] = 'Wrong values type sent'
 
     return jsonify(response), status_code
 
@@ -94,15 +102,19 @@ def rate_team():
 
         else:
             status_code = 401
+            response['message'] = 'Team could not be rated'
 
     except json.JSONDecodeError:
         status_code = 415
+        response['message'] = 'Wrong message format'
 
     except KeyError:
         status_code = 400
+        response['message'] = 'Wrong keys sent'
 
     except TypeError:
         status_code = 400
+        response['message'] = 'Wrong values type sent'
 
     return jsonify(response), status_code
 
@@ -122,6 +134,7 @@ def get_team(team_name):
     team = manager.get_team(team_name)
     if team is None:
         status_code = 404
+        response['message'] = 'Team not found'
     else:
         response['data'] = team
         response['message'] = 'Ok'
@@ -146,15 +159,19 @@ def create_team():
 
         else:
             status_code = 401
+            response['message'] = 'Team could not be created'
 
     except json.JSONDecodeError:
         status_code = 415
+        response['message'] = 'Wrong message format'
 
     except KeyError:
         status_code = 400
+        response['message'] = 'Wrong keys sent'
 
     except TypeError:
         status_code = 400
+        response['message'] = 'Wrong values type sent'
 
     return jsonify(response), status_code
 
@@ -175,15 +192,19 @@ def delete_team():
 
         else:
             status_code = 401
+            response['message'] = 'Team could not be deleted'
 
     except json.JSONDecodeError:
         status_code = 415
+        response['message'] = 'Wrong message format'
 
     except KeyError:
         status_code = 400
+        response['message'] = 'Wrong keys sent'
 
     except TypeError:
         status_code = 400
+        response['message'] = 'Wrong values type sent'
 
     return jsonify(response), status_code
 
@@ -206,15 +227,19 @@ def edit_team_add_members():
 
         else:
             status_code = 401
+            response['message'] = 'Members could not be added'
 
     except json.JSONDecodeError:
         status_code = 415
+        response['message'] = 'Wrong message format'
 
     except KeyError:
         status_code = 400
+        response['message'] = 'Wrong keys sent'
 
     except TypeError:
         status_code = 400
+        response['message'] = 'Wrong values type sent'
 
     return jsonify(response), status_code
 
@@ -237,15 +262,19 @@ def edit_team_remove_members():
 
         else:
             status_code = 401
+            response['message'] = 'Members could not be deleted'
 
     except json.JSONDecodeError:
         status_code = 415
+        response['message'] = 'Wrong message format'
 
     except KeyError:
         status_code = 400
+        response['message'] = 'Wrong keys sent'
 
     except TypeError:
         status_code = 400
+        response['message'] = 'Wrong values type sent'
 
     return jsonify(response), status_code
 
@@ -268,15 +297,19 @@ def enter_team():
 
         else:
             status_code = 401
+            response['message'] = 'User could not be added to team'
 
     except json.JSONDecodeError:
         status_code = 415
+        response['message'] = 'Wrong message format'
 
     except KeyError:
         status_code = 400
+        response['message'] = 'Wrong keys sent'
 
     except TypeError:
         status_code = 400
+        response['message'] = 'Wrong values type sent'
 
     return jsonify(response), status_code
 
@@ -299,15 +332,19 @@ def leave_team():
 
         else:
             status_code = 401
+            response['message'] = 'User could not be removed from team'
 
     except json.JSONDecodeError:
         status_code = 415
+        response['message'] = 'Wrong message format'
 
     except KeyError:
         status_code = 400
+        response['message'] = 'Wrong keys sent'
 
     except TypeError:
         status_code = 400
+        response['message'] = 'Wrong values type sent'
 
     return jsonify(response), status_code
 
@@ -333,6 +370,7 @@ def get_certificates():
 
         if not certificates:
             status_code = 404
+            response['message'] = 'Valuer or certificates not found'
 
         else:
             response['data'] = certificates
@@ -341,12 +379,15 @@ def get_certificates():
 
     except json.JSONDecodeError:
         status_code = 415
+        response['message'] = 'Wrong message format'
 
     except KeyError:
         status_code = 400
+        response['message'] = 'Wrong keys sent'
 
     except TypeError:
         status_code = 400
+        response['message'] = 'Wrong values type sent'
 
     return jsonify(response), status_code
 
@@ -364,6 +405,7 @@ def get_certificate(student_name):
 
         if not certificate:
             status_code = 404
+            response['message'] = 'Valuer or certificate not found'
 
         else:
             response['data'] = certificate
@@ -372,12 +414,15 @@ def get_certificate(student_name):
 
     except json.JSONDecodeError:
         status_code = 415
+        response['message'] = 'Wrong message format'
 
     except KeyError:
         status_code = 400
+        response['message'] = 'Wrong keys sent'
 
     except TypeError:
         status_code = 400
+        response['message'] = 'Wrong values type sent'
 
     return jsonify(response), status_code
 
@@ -393,19 +438,23 @@ def generate_certificate(student_name):
 
         if not manager.generate_certificate(valuer_name, student_name):
             status_code = 401
+            response['message'] = 'Certificate could not be created'
 
         else:
             response['message'] = 'Certificate created'
-            status_code = 200
+            status_code = 201
 
     except json.JSONDecodeError:
         status_code = 415
+        response['message'] = 'Wrong message format'
 
     except KeyError:
         status_code = 400
+        response['message'] = 'Wrong keys sent'
 
     except TypeError:
         status_code = 400
+        response['message'] = 'Wrong values type sent'
 
     return jsonify(response), status_code
 
