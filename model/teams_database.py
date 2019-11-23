@@ -120,15 +120,18 @@ class TeamsDB:
                     conn.cursor().execute(query)
 
                     teams = cursor.fetchall()
+                    print("Found team")
                     teams_objects = []
                     for team_name, admin_name, rank in teams:
                         cursor.execute(f'SELECT * FROM STUDENT_TEAM WHERE team_name = %s;', (team_name,))
 
                         members = cursor.fetchall()
+                        print("Found members")
                         full_members = []
                         for _, member in members:
                             cursor.execute(second_query, (member,))
                             full_members.append(cursor.fetchone())
+                            print("Found member")
 
                         teams_objects.append(self.create_team((team_name, admin_name, rank), full_members))
 
