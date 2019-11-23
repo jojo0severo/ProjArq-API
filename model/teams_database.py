@@ -117,16 +117,14 @@ class TeamsDB:
         with psycopg2.connect(self.db) as conn:
             with conn.cursor() as cursor:
                 try:
-                    conn.cursor().execute(query)
+                    cursor.execute(query)
 
                     teams = cursor.fetchall()
-                    print("Found team")
                     teams_objects = []
                     for team_name, admin_name, rank in teams:
                         cursor.execute(f'SELECT * FROM STUDENT_TEAM WHERE team_name = %s;', (team_name,))
 
                         members = cursor.fetchall()
-                        print("Found members")
                         full_members = []
                         for _, member in members:
                             print("searching for member:", member)
@@ -139,7 +137,6 @@ class TeamsDB:
                     return teams_objects
 
                 except psycopg2.ProgrammingError as e:
-                    print("Programming error", str(e))
                     return []
 
     def get_rank(self):
