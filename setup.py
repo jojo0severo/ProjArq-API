@@ -205,6 +205,9 @@ def delete_team():
     except TypeError:
         status_code = 400
         response['message'] = 'Wrong values type sent'
+        
+    except Exception as e:
+        print(str(e))
 
     return jsonify(response), status_code
 
