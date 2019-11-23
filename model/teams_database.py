@@ -95,23 +95,16 @@ class TeamsDB:
                 try:
                     cursor.execute(first_query, (team_name,))
                     team = cursor.fetchone()
-                    print("Got team", team)
                     if not team:
                         return None
 
                     cursor.execute(second_query, (team_name,))
-                    try:
-                        members = cursor.fetchall()
-                        print("Got members", members)
-                    except Exception:
-                        return self.create_team(team, [])
+                    members = cursor.fetchall()
 
                     full_members = []
                     for _, member in members:
-                        print("Looking for", member)
                         cursor.execute(third_query, (member,))
                         full_members.append(cursor.fetchone())
-                        print("Found member", member)
 
                     return self.create_team(team, full_members)
 

@@ -21,6 +21,3 @@ class Team:
     def remove_members(self, members):
         for member in members:
             self.remove_member(member)
-
-    def json(self):
-        return {'name': self.team_name, 'admin': self.admin_email, 'members': self.members}
