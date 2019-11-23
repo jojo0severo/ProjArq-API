@@ -129,6 +129,7 @@ class TeamsDB:
                         print("Found members")
                         full_members = []
                         for _, member in members:
+                            print("searching for member:", member)
                             cursor.execute(second_query, (member,))
                             full_members.append(cursor.fetchone())
                             print("Found member")
