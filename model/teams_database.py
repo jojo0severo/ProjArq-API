@@ -99,7 +99,11 @@ class TeamsDB:
                         return None
 
                     cursor.execute(second_query, (team_name,))
-                    members = cursor.fetchall()
+                    try:
+                        members = cursor.fetchall()
+                    except Exception:
+                        return self.create_team(team, [])
+
                     full_members = []
                     for _, member in members:
                         cursor.execute(third_query, (member,))
