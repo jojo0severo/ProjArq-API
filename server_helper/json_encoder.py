@@ -31,3 +31,18 @@ class Encoder:
     def encode_certificates(self, certificates):
         certificates = copy.deepcopy(certificates)
         return [self.encode_certificate(certificate) for certificate in certificates]
+
+    def encode_user(self, user, is_student):
+        user = copy.deepcopy(user)
+        if is_student:
+            return {
+                'name': user.split('@')[0].replace('_', ' '),
+                'email': user.email,
+                'course': user.course,
+                'is_student': True
+            }
+        else:
+            return {
+                'name': user.name,
+                'is_student': False
+            }

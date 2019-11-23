@@ -12,7 +12,7 @@ class Manager:
         self.json_encoder = Encoder()
 
     def get_user(self, username, is_student):
-        return self.users_manager.get_user(username, is_student)
+        return self.json_encoder.encode_user(self.users_manager.get_user(username, is_student), is_student)
 
     def add_student(self, username, password, course, email):
         return self.users_manager.add_user(username, password, True, course, email)

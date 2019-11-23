@@ -25,7 +25,7 @@ def login():
         is_student = data['is_student']
 
         if manager.check_user(username, password, is_student):
-            response['data'] = manager.get_user(username, username.endswith('@acad.pucrs.br')).json()
+            response['data'] = manager.get_user(username, username.endswith('@acad.pucrs.br'))
             response['message'] = 'Logged'
             status_code = 200
 
@@ -59,7 +59,7 @@ def register_valuer():
         password = data['password']
 
         if manager.add_valuer(username, password):
-            response['data'] = manager.get_user(username, False).json()
+            response['data'] = manager.get_user(username, False)
             response['message'] = 'Registered'
             status_code = 201
 
@@ -205,9 +205,6 @@ def delete_team():
     except TypeError:
         status_code = 400
         response['message'] = 'Wrong values type sent'
-        
-    except Exception as e:
-        print(str(e))
 
     return jsonify(response), status_code
 
@@ -328,7 +325,7 @@ def leave_team():
         email = data['username']
 
         if manager.delete_member(team_name, email):
-            response['data'] = manager.get_user(email, True).json()
+            response['data'] = manager.get_user(email, True)
             response['message'] = 'User removed'
             status_code = 200
             socket.emit('member_removed', data={'team': manager.get_team(team_name)}, broadcast=True)
