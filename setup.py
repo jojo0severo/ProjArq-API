@@ -132,7 +132,7 @@ def get_team(team_name):
     response = {'data': {}, 'message': 'Error'}
 
     team = manager.get_team(team_name)
-    if team is None:
+    if not team:
         status_code = 404
         response['message'] = 'Team not found'
     else:
