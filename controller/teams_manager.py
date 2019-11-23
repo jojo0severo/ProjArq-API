@@ -68,8 +68,11 @@ class TeamsManager:
         return self.teams_db.update_rank(team_name, new_rank)
 
     def delete_team(self, team_name, admin_email):
+        print("Entered delete_team")
         if team_name in self.teams.keys():
+            print("Key in cache")
             if self.teams[team_name].admin_email == admin_email and len(self.teams[team_name].members) == 1:
+                print("Team is able to be deleted")
                 del self.teams[team_name]
                 return self.teams_db.remove_team(team_name)
 
@@ -77,7 +80,9 @@ class TeamsManager:
 
         else:
             team = self.teams_db.get_team(team_name)
+            print("Got team")
             if team is not None and team.admin_email == admin_email and len(team.members) == 1:
+                print("Team is able to be deleted")
                 return self.teams_db.remove_team(team_name)
 
             return False
