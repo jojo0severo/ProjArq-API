@@ -125,7 +125,7 @@ class TeamsDB:
         with psycopg2.connect(self.db) as conn:
             with conn.cursor() as cursor:
                 try:
-                    conn.cursor().execute(query)
+                    cursor.execute(query)
 
                     teams = cursor.fetchall()
                     teams_objects = []
