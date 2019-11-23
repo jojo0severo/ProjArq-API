@@ -80,7 +80,7 @@ class TeamsManager:
 
         else:
             team = self.teams_db.get_team(team_name)
-            print("Got team")
+            print("Got team", team.json() if team is not None else team)
             if team is not None and team.admin_email == admin_email and len(team.members) == 1:
                 print("Team is able to be deleted")
                 return self.teams_db.remove_team(team_name)
