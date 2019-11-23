@@ -134,7 +134,8 @@ class TeamsDB:
 
                     return teams_objects
 
-                except psycopg2.ProgrammingError:
+                except psycopg2.ProgrammingError as e:
+                    print("Programming error", str(e))
                     return []
 
     def get_rank(self):
