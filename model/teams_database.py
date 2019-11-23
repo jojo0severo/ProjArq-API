@@ -182,6 +182,7 @@ class TeamsDB:
                     cursor.execute(first_query, (team_name,))
                     cursor.execute(second_query, (team_name,))
                     conn.commit()
+                    print("Removed team")
                     return True
 
                 except psycopg2.IntegrityError as e:
