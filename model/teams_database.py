@@ -184,10 +184,12 @@ class TeamsDB:
                     conn.commit()
                     return True
 
-                except psycopg2.IntegrityError:
+                except psycopg2.IntegrityError as e:
+                    print("Integrity error", str(e))
                     return False
 
-                except psycopg2.OperationalError:
+                except psycopg2.OperationalError as e:
+                    print("Operational error", str(e))
                     return False
 
     def remove_member(self, team_name, member_email):
