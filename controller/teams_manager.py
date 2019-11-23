@@ -101,10 +101,7 @@ class TeamsManager:
 
     def delete_members(self, team_name, admin_email, members):
         if team_name in self.teams.keys():
-            if self.teams[team_name].admin_email == admin_email:
-                if admin_email in members:
-                    return False
-
+            if self.teams[team_name].admin_email == admin_email and admin_email not in members:
                 self.teams[team_name].remove_members(members)
                 return self.teams_db.remove_members(team_name, members)
 
@@ -112,7 +109,7 @@ class TeamsManager:
 
         else:
             team = self.teams_db.get_team(team_name)
-            if team is not None and team.admin_email == admin_email and admin_email not in team.members:
+            if team is not None and team.admin_email == admin_email and admin_email not in members:
                 return self.teams_db.remove_members(team_name, members)
 
             return False
