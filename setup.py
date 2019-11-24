@@ -45,10 +45,6 @@ def login():
         status_code = 400
         response['message'] = 'Wrong values type sent'
         
-    except Exception as e:
-        status_code = 500
-        response['message'] = 'Exception: ' + str(e)
-        
     return jsonify(response), status_code
 
 
