@@ -29,13 +29,13 @@ class UsersManager:
     def get_user(self, key, is_student):
         if is_student:
             if key not in self.students.keys():
-                return self.users_database.get_student(key)
+                self.students[key] = self.users_database.get_student(key)
 
             return self.students[key]
 
         else:
             if key not in self.valuers.keys():
-                return self.users_database.get_valuer(key)
+                self.valuers[key] = self.users_database.get_valuer(key)
 
             return self.valuers[key]
 

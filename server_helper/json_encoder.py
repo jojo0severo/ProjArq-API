@@ -36,7 +36,7 @@ class Encoder:
         user = copy.deepcopy(user)
         if is_student:
             return {
-                'name': user.split('@')[0].replace('_', ' '),
+                'name': user.email.split('@')[0].replace('_', ' '),
                 'email': user.email,
                 'course': user.course,
                 'is_student': True
